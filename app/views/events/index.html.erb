@@ -1,0 +1,53 @@
+<%- model_class = Event -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.pluralize.titleize %></h1>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><%= model_class.human_attribute_name(:id) %></th>
+      <th><%= model_class.human_attribute_name(:name) %></th>
+      <th><%= model_class.human_attribute_name(:venue) %></th>
+      <th><%= model_class.human_attribute_name(:time) %></th>
+      <th><%= model_class.human_attribute_name(:created_at) %></th>
+      <th><%= model_class.human_attribute_name(:price) %></th>   
+      <th><%=t '.actions', :default => t("helpers.actions") %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @events.each do |event| %>
+      <tr>
+        <td><%= link_to event.id, event_path(event) %></td>
+        <td><%= event.name %></td>
+        <td><%= event.venue %></td>
+        <td><%= event.time %></td>
+        <td><%=l event.created_at %></td>
+        <%if current_user.present?%>
+          <%if current_user.female?%>
+            <td><%= event.female_discount_price%></td>
+          <%else%>
+            <td><%= event.price %></td>
+          <%end%>
+        <td>
+          <% if current_user.attending?(event) %>
+            <%if Time.now < event.time%>
+            <%= link_to t('.unattend'),
+              unattend_event_path(event.id),method: :post, :class => 'btn btn-default'  %>
+          <% else %>
+            <%= link_to t('.attend', :default => t("helpers.links.attend")),
+              attend_event_path(event.id),method: :post, :class => 'btn btn-default' %>
+          <% end %>
+        <% else %>
+           <%= link_to t('.attend', :default => t("helpers.links.attend")),
+              attend_event_path(event.id),method: :post, :class => 'btn btn-default' %>
+           <%end%>
+           <%#=event.price%><br>
+           
+        <% end %><br>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+

@@ -1,0 +1,43 @@
+<%- model_class = Event -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:name) %>:</strong></dt>
+  <dd><%= @event.name %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:venue) %>:</strong></dt>
+  <dd><%= @event.venue %></dd>
+  <dt><strong><%= model_class.human_attribute_name(:time) %>:</strong></dt>
+  <dd><%= @event.time %></dd>
+  <% if current_user .present?%>
+  <%if current_user.female?%>
+    <dt><strong><%= model_class.human_attribute_name(:price) %>:</strong></dt>
+    <dd><%= @event.female_discount_price%></dd>
+  <%else%>
+    <dt><strong><%= model_class.human_attribute_name(:price) %>:</strong></dt>
+    <dd><%= @event.price%></dd>
+  <%end%>
+</dl>
+
+<% if current_user %>
+  <% if current_user.attending?(@event) %>
+    <%if Time.now < @event.time%>
+    <%= link_to t('.unattend'),
+              unattend_event_path(@event.id),method: :post, :class => 'btn btn-default'  %>
+  <% else %>
+    <%= link_to t('.attend'),
+              attend_event_path(@event.id),method: :post, :class => 'btn btn-default' %>
+    <%end%>
+  <% end %>
+<% end %>
+
+<h3> People attending: </h3>
+<% @event.users.each do |user| %>
+  Name: <%= user.name %><br>
+  Gender: <%= user.gender%><br>
+<% end %>
+
+<%end%>
+
+
